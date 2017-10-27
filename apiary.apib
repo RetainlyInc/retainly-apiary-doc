@@ -1,0 +1,205 @@
+FORMAT: 1A
+HOST: https://retainly.co/app/api
+
+# Retainly
+
+Integrate your app with Retainly. The most popular email marketing system that everyone loves.
+
+##Requirements for apps using the Retainly API
+
+Retainly API supports non-rich internet SaaS apps that users access with a web browser. Mobile extensions to these SaaS apps are also supported.
+
+If you plan to integrate your app with Retainly, your app must:
+
+* Be a web app available for use within a browser.
+*  Pass the technical, security, and marketing reviews.
+
+
+
+The API is organized around REST. All requests should be made over SSL. All request and response bodies, including errors, are encoded in JSON.This collection of API provides various methods to pull data from Retainly.
+
+*Note*
+
+    RET-API-KEY must be passed in the request header.
+    
+## Segments [/segments/]
+
+### GET [GET]
+
+This returns the list of segments that is created by the user within their retainly account.
+
++ Request  (application/json)
+
+    + Headers
+    
+            RET-API-KEY: YOUR_API_KEY
+
++ Response 200 (application/json)
+
+        [
+          {
+            "id": "1",
+            "name": "Default"
+          },
+          {
+            "id": "2",
+            "name": "Leads"
+          }
+        ]
+        
++ Response 403 (application/json)
+
+        {
+            "status": "false"
+            "message": "Invalid API key"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": false
+            "message": "data could not be found"
+        }
+
+## Contacts [/contacts/] 
+
+### POST [POST]
+
+You can use this method to pass the contact data to Retainly (to create new contact). Below values can be passed in the request body with JSON format.
+
++ title (optional, string)            : Title of the contact
++ first_name (optional, string)       : First Name of the contact
++ last_name (optional, string)        : Last Name of the contact
++ name (optional, string)             : Name of your contact (short name, or nice name)
++ email (string)                      : Email ID of the contact
++ phone (optional, string)            : Mobile or phone number of the contact
++ gender (optional, string)           : Gender of the contact 
++ birthday (optional, date)           : Date of Birth (yyyy-mm-dd)
++ signedup_at (optional, date)        : Signed up date on your app, use yyyy-mm-dd format    
++ plan (optional, string)             : Plan as per your application
++ referrer (optional, string)         : Referrer of this contact
++ company (optional, string)          : Company of the contact    
++ address (optional, string)          : Address of the contact
++ city (optional, string)             : City of the contact
++ state (optional, string)            : State or Region of the contact   
++ country (optional, string)          : Country of the contact 
++ postal_code (optional, string)      : Postal or zip code
++ country_code (optional, string)     : Country code of the contact   
++ website (optional, string)          : Website URL of the contact
++ ip (optional, string)               : IP Address of the contact
++ browser  (optional, string)         : Browser used by the contact
++ browser_version (optional, string)  : Browser Version
++ OS (optional, string)               : Operating System
++ avatar (optional, string)           : Avatar URL
++ tags (optional, string)             : Tags to be used in retainly
++ listIds (optional, string)          : List Ids to which the contact has to be added to. The IDs can be obtained by GET Segments
+
++ Request  (application/json)
+
+    + Headers
+    
+            RET-API-KEY: YOUR_API_KEY
+
+    + Body 
+
+            {
+                "name": "raj",
+                "first_name": "rajesh",
+                "last_name": "pandurangan"
+                "email": "rajesh@retainlymail.com",
+                "tags": "Beta,SaaS"
+                "listIds": "1,2"
+            }
+            
+
++ Response 201 (application/json)
+
+        {
+         "id": "572",
+         "email": "rajesh@retainlymail.com",
+         "message": "success"
+        }
+        
++ Response 403 (application/json)
+
+        {
+            "status": "false"
+            "message": "Invalid API key"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "status": false
+            "message": "data could not be found"
+        }
+
+## Send Blast With Template [/SendBlastWithTemplate/] 
+
+### POST [POST]
+
+You can use this method to pass the entire HTML template to use in the blast.
+
++ blastName (optional, string)            : Name of the blast. If not provided default value will be created similar to "Blast With API on 2017-05-29 18:30:25" 
++ templateContent (string)                : HTML template to send. This can contain the contact parameters like _#first_name#_, _#last_name#_ that will be replaced with real contact info from the contacts details
++ mailSubject (optional, string)          : This string will be used as mail subject. If not provided, the mail subject will be similar to "Blast With API on 2017-05-29 18:30:25". You can use shortcode of emojis. e.g., :joy: will be replaced with its relevant emoji 😂.
++ mailServer (optional, string)           : Name of the mail server that you want to use. _This mail server must be configured in Retainly_. Possible values or Sparkpost, Pepipost, SES, or SMTP. If not passed, will pick default activated mail server. If no mail server has configured, will return status _false_.
++ listIds (string)                        : Comma separated list Ids to which the blast has to be sent. Mandatory field, the list must be active in Retainly.
++ includedTags (optional, string)         : Comma separated tag Ids to which the blast has to be sent.
++ excludedTags (optional, string)         : Optional field. Comma separated Tag Ids to whom the blast has to be ignored.
++ sendAfter (optional, date)              : You can schedule the time for the blast. (yyyy-mm-dd h:i:s)
+
++ Request  (application/json)
+
+    + Headers
+    
+            RET-API-KEY: YOUR_API_KEY
+
+    + Body 
+
+            {
+                "blastName": "Retainly API Blast",
+                "templateContent": "Hello #first_name#,<br>This is the sample <b>Blast</b> created with API.<br>Cheers,<br>Rajesh",
+                "mailSubject": "API Blast From Retainly"
+                "mailServer": "Pepipost",
+                "listIds": "1,2,3",
+                "includedTags": "1,2"
+                "excludedTags": "3,4",
+                "sendAfter":"2017-05-29 18:25:30"
+            }
+            
+
++ Response 201 (application/json)
+
+        {
+         "status": true,
+         "message": "success"
+        }
+        
++ Response 403 (application/json)
+
+        {
+            "status": "false"
+            "message": "Invalid API key"
+        }
+
++ Response 200 (application/json)
+
+        {
+             "status": "false",
+            "message": "Invalid Template. Please Try Again."
+        }
+        
++ Response 200 (application/json)
+
+        {
+             "status": "false",
+            "message": "Invalid List IDs. Please Try Again."
+        }        
+
++ Response 200 (application/json)
+
+        {
+             "status": "false",
+             "message": "Invalid Mail Server Name. Please Try Again."
+        }
